@@ -4,20 +4,77 @@
 // ========================
 // ----- DOM Elements -----
 
-const yearE1 = document.getElementById("year");
+const yearEl = document.getElementById("year");
 const menuBtn = document.getElementById("menuBtn");
 const mobileMenu = document.getElementById("mobileMenu");
 const ctaBtn = document.getElementById("ctaBtn");
 const callBtn = document.getElementById("callBtn");
 const phoneLink = document.getElementById("phoneLink");
 const heading = document.getElementById("heroHeading");
+const featureGrid = document.getElementById("featureGrid");
+
+// ----- Services Data (Array of Objects) -----
+
+const services = [
+    {
+        title: "Classic Haircut",
+        text: "Timeless cuts with modern precision tailored to your style.",
+        image: "assets/images/feature-1.jpg"
+    },
+    {
+        title: "Beard Trim",
+        text: "Shape and line-up your beard for a clean, sharp finish",
+        image: "assets/images/feature-2.jpg"
+    },
+    {
+        title: "Straight Razor Shave",
+        text: "Hot towel treatment with a smooth traditional shave.",
+        image: "assets/images/feature-3.jpg"
+    }
+];
+
+// // ----- Render Features using forEach -----
+// const renderFeatures = () => {
+//     if (!featureGrid) return;
+
+//     Services.forEach(service => {
+//         const card = document.createElement("article");
+//         card.classList.add("feature-card");
+
+//         card.innerHTML = `
+//             <img src="${service.image}" alt="${service.title}" class="feature-img" />
+//             <h3 class= "feature-title">${service.title}</h3>
+//             <p class="feature-text">${service.text}</p>
+//         `;
+
+//         featureGrid.appendChild(card);
+// });
+// };
+
+// ----- Render  Features using map() and join() -----
+const renderFeaturesMap = () => {
+    const cardsHTML = services.map(service => {
+        return `
+        <article class="feature-card">
+            <img src="${service.image}" alt="${service.title}" class="feature-img"/>
+            <h3 class="feature-title">${service.title}</h3>
+            <p class="feature-text">${service.text}</p>
+        </article>
+        `;
+    }).join("");
+
+    featureGrid.innerHTML = cardsHTML;
+};
+
+
+
 
 // ----- Helpers / Funtions -----
 // Update footer year automatically
-const setCurrentYear = () => [
+const setCurrentYear = () => {
     const now = new Date();
-    yearE1.textContent = now.getFullYear();
-];
+    yearEl.textContent = now.getFullYear();
+};
 
 // Toggle mobile menu open/close
 let isMenuOpen = false;
@@ -46,9 +103,10 @@ const updateHeadingText = (newText) => {
 };
 
 // ----- Event Listeners -----
-
 // 1) Set year on page load
 setCurrentYear();
+// renderFeatures();
+renderFeaturesMap();
 
 // 2) Hamburger menu toggle
 if (menuBtn) {
@@ -68,7 +126,7 @@ if (mobileMenu) {
 }
 
 // 4) CTA Button: "Book Now" (placeholder behavior)
-if (ctaBTN) {
+if (ctaBtn) {
     ctaBtn.addEventListener("click", () => {
         updateHeadingText("Booking coming next - great choice");
     });
