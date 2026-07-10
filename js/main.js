@@ -15,32 +15,6 @@ const featureGrid = document.getElementById("featureGrid");
 const nav = document.getElementById("nav");
 const siteHeader = document.querySelector(".site-header");
 
-// ----- Services Data (Array of Objects) -----
-// const services = [
-//     {
-//         title: "Classic Haircut",
-//         text: "Timeless cuts with modern precision tailored to your style.",
-//         image: "assets/images/feature-1.jpg"
-//     },
-//     {
-//         title: "Beard Trim",
-//         text: "Shape and line-up your beard for a clean, sharp finish",
-//         image: "assets/images/feature-2.jpg"
-//     },
-//     {
-//         title: "Straight Razor Shave",
-//         text: "Hot towel treatment with a smooth traditional shave.",
-//         image: "assets/images/feature-3.jpg"
-//     }
-// ];
-
-// const navLinks = [
-//     {label: "Home", href: "#hero"},
-//     {label: "Services", href: "#features"},
-//     {label: "Book", href: "#cta"},
-//     {label: "Contact", href: "#footer"}
-// ];
-
 // ----- Modal Elements -----
 const serviceModal = document.getElementById("serviceModal");
 const serviceModalOverlay = document.getElementById("serviceModalOverlay");
@@ -48,6 +22,7 @@ const serviceModalClose = document.getElementById("serviceModalClose");
 const serviceModalTitle = document.getElementById("serviceModalTitle");
 const serviceModalPrice = document.getElementById("serviceModalPrice");
 const serviceModalList = document.getElementById("serviceModalList");
+
 // ----- Services Data (Array of Objects) -----
 const services = [
     {
@@ -133,7 +108,7 @@ const services = [
     {
         id: 6,
         title: "Head Shave",
-        title: "assets/images/feature-3.jpg",
+        image: "assets/images/feature-3.jpg",
         alt: "Head shave",
         description: "Smooth head shave with classic barbershop treatment.",
         price: 28,
@@ -148,22 +123,73 @@ const services = [
     },
 ];
 
-// ----- Render Navigation using map() -----
+const navLinks = [
+    {label: "Home", href: "#hero"},
+    {label: "Services", href: "#features"},
+    {label: "Book", href: "#cta"},
+    {label: "Contact", href: "#footer"}
+];
+
+// Render Functions 
+// Builds the desktop nav and mobile menu links from the navLinks array,
+// so links live in one data source instead of being duplicated in HTML.
 const renderNavigation = () => {
-    // Desktop Nav
     if (nav) {
-        const navHTML = navLinks.map(link => {
-            return `
-            <a href="${link.href}" class="nav-link">
-            ${link.label}
-            </a>
-            `;
-        }).join("");
-
+        const navHTML = navLinks
+        .map(
+            (link) => `<a href="${link.href}" class="nav-link">${link.label}</a>`,
+        )
+        .join("");
         nav.innerHTML = navHTML;
+    }
+    if (mobileMenu) {
+        const mobileHTML = navLinks
+        .map(
+            (link) =>
+                `<a href="${link.href}" class="mobile-link">${link.label}</a>`,
+        )
+        .join("");
+        mobileMenu.innerHTML = mobileHTML;
+    }
+}
 
-    };
-};
+// Builds the service cards (image, title, price, badge, "View Details" button)
+// from the services array and injects them into the feature grid.
+const rendereServices = () => {
+    if (!featuresGrid) return;
+    const serviceHTML = services
+        .map((service) => {
+            let badgeHTML = "";
+            if (service.popular) {
+                badgeHTML = `<p class="service-badge">Popular Choice</p>`;
+            } else {
+                badgeHTML = `<p class="service-badge alt-badge">Barber Favorite</p>`;
+            }
+            return `
+<article class="feature-card">
+<img
+src="$}service.image}"
+alt=${service.alt}"
+class="feature-img"
+/>
+<h3 class="feature-title">${service.title}</h3>
+<p class="feature-text">${service.description}</p>
+${badgeHTML}
+<p class="service=price">$${service.price}</p>
+<div class="service-actions">
+<button
+class="service-details-btn"
+type="button"
+data-service-id="${service.id}"
+>
+View Details
+</button>
+</div>
+</article>
+`;
+        })
+}
+
 
 
 // Mobile Nav
@@ -178,24 +204,6 @@ if (mobileMenu) {
 
     mobileMenu.innerHTML = mobileHTML;
 };
-
-// ----- Render Features using forEach -----
-// const renderFeatures = () => {
-//     if (!featureGrid) return;
-
-//     Services.forEach(service => {
-//         const card = document.createElement("article");
-//         card.classList.add("feature-card");
-
-//         card.innerHTML = `
-//             <img src="${service.image}" alt="${service.title}" class="feature-img" />
-//             <h3 class= "feature-title">${service.title}</h3>
-//             <p class="feature-text">${service.text}</p>
-//         `;
-
-//         featureGrid.appendChild(card);
-// });
-// };
 
 // ----- Render  Features using map() and join() -----
 const renderFeaturesMap = () => {
@@ -250,10 +258,36 @@ const closeMobileMenu = () => {
     isMenuOpen = false;
 };
 
-// Reusable function with parameters (practive pattern)
+// Overwrites the hero heading's text with newText.
+// Used as a generic setter for the placeholder CTA/call-button behaviors.
 const updateHeadingText = (newText) => {
     if (!heading) return;
     heading.textContent = newText;
+};
+
+// ----- Modal Logic -----
+// Finds the service matching serviceID, fills the modal with its title/price/details,
+// then opens the modal and locks page scroll while it's showing.
+const openServiceModal = (serviceId) => {
+    if (
+        !serviceModal ||
+        !serviceModalTitle ||
+        !serviceModalPrice ||
+        !serviceModalList
+    )
+        return;
+    const selectedService = services.find(
+            (service) => service.id === Number(serviceId),
+        );
+    if (!selectedService) return;
+    serviceModalTitle.textContent = selectedService.title;
+    serviceModalPrice.textContent = `$${selectedService.price}`;
+    serviceModalList.innerHTML = selectedService.details
+        .map((detail) => `<li>${detail}</li>`)
+        .join("");
+    serviceModal,classList.add("is-open");
+    serviceModal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
 };
 
 // ----- Event Listeners -----
